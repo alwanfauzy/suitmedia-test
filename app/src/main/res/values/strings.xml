@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Suitmedia Screening</string>
+    <string name="next">Next</string>
+    <string name="masukkan_nama">Masukkan nama</string>
+    <string name="nama">Nama :</string>
+    <string name="pilih_guest">Pilih Guest</string>
+    <string name="pilih_event">Pilih Event</string>
+    <string name="username">userName</string>
 </resources>
