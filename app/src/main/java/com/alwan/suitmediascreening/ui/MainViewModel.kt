@@ -37,4 +37,10 @@ class MainViewModel(private val pref: SettingPreferences) : ViewModel() {
     fun getEventName(): LiveData<String> {
         return pref.getEventName().asLiveData()
     }
+
+    fun reset() {
+        viewModelScope.launch {
+            pref.reset()
+        }
+    }
 }

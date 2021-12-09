@@ -10,6 +10,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
+import com.alwan.suitmediascreening.R
 import com.alwan.suitmediascreening.databinding.FragmentDashboardBinding
 import com.alwan.suitmediascreening.helpers.SettingPreferences
 import com.alwan.suitmediascreening.helpers.ViewModelFactory
@@ -37,6 +39,12 @@ class DashboardFragment : Fragment(), View.OnClickListener {
         binding.btnPilihEvent.setOnClickListener(this)
         binding.btnPilihGuest.setOnClickListener(this)
     }
+
+    override fun onResume() {
+        super.onResume()
+        (activity as MainActivity).supportActionBar?.title = "Dashboard"
+    }
+
 
     private fun setupDashboard() {
         mainViewModel.getUserName().observe(viewLifecycleOwner, {
@@ -66,10 +74,12 @@ class DashboardFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v) {
             binding.btnPilihEvent -> {
-
+                val action = DashboardFragmentDirections.actionDashboardFragmentToEventFragment()
+                Navigation.findNavController(requireView()).navigate(action)
             }
             binding.btnPilihGuest -> {
-
+                val action = DashboardFragmentDirections.actionDashboardFragmentToGuestFragment()
+                Navigation.findNavController(requireView()).navigate(action)
             }
         }
     }

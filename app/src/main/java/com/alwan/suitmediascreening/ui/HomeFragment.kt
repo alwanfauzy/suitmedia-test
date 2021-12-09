@@ -37,6 +37,11 @@ class HomeFragment : Fragment(), View.OnClickListener {
         binding.btnNext.setOnClickListener(this)
     }
 
+    override fun onResume() {
+        super.onResume()
+        (activity as MainActivity).supportActionBar?.title = "Suitmedia Screening"
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
@@ -57,6 +62,7 @@ class HomeFragment : Fragment(), View.OnClickListener {
                 if(userName.isBlank()){
                     binding.editName.error = "Input your name first!"
                 }else{
+                    mainViewModel.reset()
                     mainViewModel.saveUserName(userName)
                     val action = HomeFragmentDirections.actionHomeFragmentToDashboardFragment()
                     Navigation.findNavController(requireView()).navigate(action)

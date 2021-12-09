@@ -6,4 +6,30 @@
     <string name="pilih_guest">Pilih Guest</string>
     <string name="pilih_event">Pilih Event</string>
     <string name="username">userName</string>
+    <string name="abc_event">abc event</string>
+    <string name="tanggal">15 Sept 2014</string>
+    <string name="user">User</string>
+    <string name="guest">Guest</string>
+
+
+    <string-array name="event_name">
+        <item>Bali</item>
+        <item>Malang</item>
+        <item>Pantai</item>
+        <item>Ulang Tahun</item>
+    </string-array>
+
+    <string-array name="event_tanggal">
+        <item>15 Jun 2021</item>
+        <item>16 Sep 2021</item>
+        <item>22 Des 2021</item>
+        <item>13 Aug 2021</item>
+    </string-array>
+
+    <integer-array name="event_photo">
+        <item>@drawable/bali</item>
+        <item>@drawable/malang</item>
+        <item>@drawable/pantai</item>
+        <item>@drawable/birthday</item>
+    </integer-array>
 </resources>

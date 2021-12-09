@@ -9,7 +9,7 @@
         android:id="@+id/homeFragment"
         android:name="com.alwan.suitmediascreening.ui.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" >
+        tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_homeFragment_to_dashboardFragment"
             app:destination="@id/dashboardFragment" />
@@ -17,5 +17,28 @@
     <fragment
         android:id="@+id/dashboardFragment"
         android:name="com.alwan.suitmediascreening.ui.DashboardFragment"
-        android:label="DashboardFragment" />
+        android:label="DashboardFragment">
+        <action
+            android:id="@+id/action_dashboardFragment_to_eventFragment"
+            app:destination="@id/eventFragment" />
+        <action
+            android:id="@+id/action_dashboardFragment_to_guestFragment"
+            app:destination="@id/guestFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/eventFragment"
+        android:name="com.alwan.suitmediascreening.ui.EventFragment"
+        android:label="EventFragment">
+        <action
+            android:id="@+id/action_eventFragment_to_dashboardFragment"
+            app:destination="@id/dashboardFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/guestFragment"
+        android:name="com.alwan.suitmediascreening.ui.GuestFragment"
+        android:label="GuestFragment" >
+        <action
+            android:id="@+id/action_guestFragment_to_dashboardFragment"
+            app:destination="@id/dashboardFragment" />
+    </fragment>
 </navigation>

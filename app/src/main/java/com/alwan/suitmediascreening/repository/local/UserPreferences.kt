@@ -21,7 +21,7 @@ class SettingPreferences private constructor(private val dataStore: DataStore<Pr
 
     fun getUserName(): Flow<String> {
         return dataStore.data.map { preferences ->
-            preferences[USER_KEY] ?: "userName"
+            preferences[USER_KEY] ?: "-"
         }
     }
 
@@ -46,6 +46,14 @@ class SettingPreferences private constructor(private val dataStore: DataStore<Pr
     fun getEventName(): Flow<String> {
         return dataStore.data.map { preferences ->
             preferences[EVENT_KEY] ?: "Pilih Event"
+        }
+    }
+
+    suspend fun reset() {
+        dataStore.edit { preferences ->
+            preferences.remove(USER_KEY)
+            preferences.remove(GUEST_KEY)
+            preferences.remove(EVENT_KEY)
         }
     }
 
