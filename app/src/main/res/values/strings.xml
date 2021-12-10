@@ -10,6 +10,10 @@
     <string name="tanggal">15 Sept 2014</string>
     <string name="user">User</string>
     <string name="guest">Guest</string>
+    <string name="home_description">Sertakan gambar profil Anda untuk melengkapi profil</string>
+    <string name="Welcome">Selamat Datang!</string>
+    <string name="image_event">Image Event</string>
+    <string name="message_from_codi">Message From Codi</string>
 
 
     <string-array name="event_name">

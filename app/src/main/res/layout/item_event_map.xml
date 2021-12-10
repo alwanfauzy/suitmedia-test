@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/bg_list"
@@ -14,40 +15,29 @@
 
         <ImageView
             android:id="@+id/img_event"
-            android:layout_width="150dp"
+            android:layout_width="match_parent"
             android:layout_height="150dp"
             android:contentDescription="@string/image_event"
-            android:scaleType="fitXY"
+            android:scaleType="centerCrop"
             android:src="@drawable/bali"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_nama_event"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:background="@color/white_80t"
+            android:textColor="@color/black"
             android:layout_margin="16dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:text="@string/abc_event"
             android:textSize="24sp"
-            app:layout_constraintEnd_toStartOf="@+id/img_event"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toBottomOf="@+id/img_event"
+            app:layout_constraintStart_toStartOf="@+id/img_event" />
 
-        <TextView
-            android:id="@+id/tv_tanggal_event"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:text="@string/tanggal"
-            android:textColor="@color/brown"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="@+id/tv_nama_event"
-            app:layout_constraintStart_toStartOf="@+id/tv_nama_event"
-            app:layout_constraintTop_toBottomOf="@+id/tv_nama_event" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

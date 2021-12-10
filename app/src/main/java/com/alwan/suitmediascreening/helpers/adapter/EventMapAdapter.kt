@@ -8,10 +8,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.alwan.suitmediascreening.R
 import com.alwan.suitmediascreening.databinding.ItemEventBinding
+import com.alwan.suitmediascreening.databinding.ItemEventMapBinding
 import com.alwan.suitmediascreening.repository.model.Event
 
-class EventAdapter(private val listener: OnEventClickListener) :
-    RecyclerView.Adapter<EventAdapter.EventViewHolder>() {
+class EventMapAdapter() :
+    RecyclerView.Adapter<EventMapAdapter.EventViewHolder>() {
     private val mData = ArrayList<Event>()
 
     fun setData(items: ArrayList<Event>) {
@@ -20,13 +21,13 @@ class EventAdapter(private val listener: OnEventClickListener) :
         notifyDataSetChanged()
     }
 
-    interface OnEventClickListener {
-        fun onItemClicked(data: Event)
+    fun getData(position: Int): Event {
+        return mData[position]
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, position: Int): EventViewHolder {
         val mView = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.item_event, viewGroup, false)
+            .inflate(R.layout.item_event_map, viewGroup, false)
 
         return EventViewHolder(mView)
     }
@@ -38,18 +39,18 @@ class EventAdapter(private val listener: OnEventClickListener) :
     override fun getItemCount(): Int = mData.size
 
     inner class EventViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val binding = ItemEventBinding.bind(itemView)
+        private val binding = ItemEventMapBinding.bind(itemView)
         fun bind(event: Event) {
             binding.tvNamaEvent.text = event.nama
-            binding.tvTanggalEvent.text = event.tanggal
             binding.imgEvent.setImageResource(event.image)
-            itemView.setOnClickListener { listener.onItemClicked(event) }
         }
     }
 
     class MarginItemDecoration(spaceHeight: Int, private val isHorizontal: Boolean) :
         RecyclerView.ItemDecoration() {
-        private val spaceHeightDp = (spaceHeight * Resources.getSystem().displayMetrics.density).toInt()
+        private val spaceHeightDp =
+            (spaceHeight * Resources.getSystem().displayMetrics.density).toInt()
+
         override fun getItemOffsets(
             outRect: Rect, view: View,
             parent: RecyclerView, state: RecyclerView.State

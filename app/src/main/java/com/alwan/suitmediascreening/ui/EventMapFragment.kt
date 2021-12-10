@@ -14,19 +14,30 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.alwan.suitmediascreening.R
-import com.alwan.suitmediascreening.databinding.FragmentEventBinding
+import com.alwan.suitmediascreening.databinding.FragmentEventMapBinding
 import com.alwan.suitmediascreening.helpers.SettingPreferences
 import com.alwan.suitmediascreening.helpers.ViewModelFactory
 import com.alwan.suitmediascreening.helpers.adapter.EventAdapter
 import com.alwan.suitmediascreening.repository.model.Event
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import androidx.recyclerview.widget.LinearSnapHelper
+
+import com.alwan.suitmediascreening.helpers.SnapOnScrollListener
+import com.alwan.suitmediascreening.helpers.adapter.EventMapAdapter
+import com.alwan.suitmediascreening.helpers.attachSnapHelperWithListener
+
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
-class EventFragment : Fragment(), EventAdapter.OnEventClickListener, View.OnClickListener {
-    private var _binding: FragmentEventBinding? = null
+class EventMapFragment : Fragment(), SnapOnScrollListener.OnSnapPositionChangeListener,
+    View.OnClickListener {
+    private lateinit var supportMapFragment: SupportMapFragment
+    private var _binding: FragmentEventMapBinding? = null
     private val binding get() = _binding!!
-    private val eventAdapter = EventAdapter(this)
+    private val eventMapAdapter = EventMapAdapter()
     private lateinit var mainViewModel: MainViewModel
     private lateinit var rvEvent: RecyclerView
     private val data = ArrayList<Event>()
@@ -35,9 +46,29 @@ class EventFragment : Fragment(), EventAdapter.OnEventClickListener, View.OnClic
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentEventBinding.inflate(inflater, container, false)
+        _binding = FragmentEventMapBinding.inflate(inflater, container, false)
+        setupMap()
 
         return binding.root
+    }
+
+    private fun setupMap() {
+        supportMapFragment =
+            (childFragmentManager.findFragmentById(R.id.fragment_container_map) as SupportMapFragment?)!!
+
+        supportMapFragment.getMapAsync { googleMap ->
+            for (i in data) {
+                val marker = MarkerOptions().position(i.latLng).title(i.nama)
+                googleMap.addMarker(marker)!!
+            }
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(data[0].latLng, 10f))
+        }
+    }
+
+    private fun changePositionMap(latLng: LatLng) {
+        supportMapFragment.getMapAsync { googleMap ->
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 10f))
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -47,7 +78,6 @@ class EventFragment : Fragment(), EventAdapter.OnEventClickListener, View.OnClic
         setupDataStore()
 
         binding.toolbar.imgBack.setOnClickListener(this)
-        binding.toolbar.imgMap.setOnClickListener(this)
     }
 
 
@@ -74,10 +104,12 @@ class EventFragment : Fragment(), EventAdapter.OnEventClickListener, View.OnClic
     private fun setupRecyclerView() {
         rvEvent = requireView().findViewById(R.id.rv_event)
         rvEvent.setHasFixedSize(true)
-        rvEvent.addItemDecoration(EventAdapter.MarginItemDecoration(16, false))
-        rvEvent.layoutManager = LinearLayoutManager(context)
-        eventAdapter.setData(data)
-        rvEvent.adapter = eventAdapter
+        rvEvent.addItemDecoration(EventAdapter.MarginItemDecoration(16, true))
+        rvEvent.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        setupSnapHelper()
+        eventMapAdapter.setData(data)
+        rvEvent.adapter = eventMapAdapter
     }
 
     override fun onDestroy() {
@@ -93,9 +125,23 @@ class EventFragment : Fragment(), EventAdapter.OnEventClickListener, View.OnClic
         )[MainViewModel::class.java]
     }
 
-    override fun onItemClicked(data: Event) {
-        mainViewModel.saveEventName(data.nama)
-        goBack()
+    private fun setupSnapHelper() {
+        val helper = LinearSnapHelper()
+        helper.attachToRecyclerView(rvEvent)
+        val behavior = SnapOnScrollListener.Behavior.NOTIFY_ON_SCROLL_STATE_IDLE
+        rvEvent.attachSnapHelperWithListener(helper, behavior, this)
+    }
+
+    override fun onSnapPositionChange(position: Int) {
+        val event = eventMapAdapter.getData(position)
+        changePositionMap(event.latLng)
+    }
+
+    private fun goBack() {
+        val action = EventMapFragmentDirections.actionEventMapFragmentToEventFragment()
+        Navigation.findNavController(requireView()).navigate(action)
+        Navigation.findNavController(requireView())
+            .popBackStack(R.id.eventMapFragment, true)
     }
 
     override fun onClick(v: View?) {
@@ -103,17 +149,6 @@ class EventFragment : Fragment(), EventAdapter.OnEventClickListener, View.OnClic
             binding.toolbar.imgBack -> {
                 goBack()
             }
-            binding.toolbar.imgMap -> {
-                val action = EventFragmentDirections.actionEventFragmentToEventMapFragment()
-                Navigation.findNavController(requireView()).navigate(action)
-            }
         }
-    }
-
-    private fun goBack() {
-        val action = EventFragmentDirections.actionEventFragmentToDashboardFragment()
-        Navigation.findNavController(requireView()).navigate(action)
-        Navigation.findNavController(requireView())
-            .popBackStack(R.id.eventFragment, true)
     }
 }
