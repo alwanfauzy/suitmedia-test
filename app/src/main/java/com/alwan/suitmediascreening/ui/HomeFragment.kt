@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -14,6 +15,7 @@ import androidx.navigation.Navigation
 import com.alwan.suitmediascreening.databinding.FragmentHomeBinding
 import com.alwan.suitmediascreening.helpers.SettingPreferences
 import com.alwan.suitmediascreening.helpers.ViewModelFactory
+import com.alwan.suitmediascreening.helpers.isPalindrome
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
@@ -37,11 +39,6 @@ class HomeFragment : Fragment(), View.OnClickListener {
         binding.btnNext.setOnClickListener(this)
     }
 
-    override fun onResume() {
-        super.onResume()
-        (activity as MainActivity).supportActionBar?.title = "Suitmedia Screening"
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
@@ -56,18 +53,24 @@ class HomeFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(v: View?) {
-        when(v) {
+        when (v) {
             binding.btnNext -> {
                 val userName = binding.editName.text.toString()
-                if(userName.isBlank()){
+                if (userName.isBlank()) {
                     binding.editName.error = "Input your name first!"
-                }else{
+                } else {
                     mainViewModel.reset()
                     mainViewModel.saveUserName(userName)
+                    val message = if (userName.isPalindrome()) "isPalindrome" else "not palindrome"
+                    showToast(message)
                     val action = HomeFragmentDirections.actionHomeFragmentToDashboardFragment()
                     Navigation.findNavController(requireView()).navigate(action)
                 }
             }
         }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 }

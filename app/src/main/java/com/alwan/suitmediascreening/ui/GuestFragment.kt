@@ -1,14 +1,11 @@
 package com.alwan.suitmediascreening.ui
 
 import android.content.Context
-import android.opengl.Visibility
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -17,25 +14,19 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.alwan.suitmediascreening.R
 import com.alwan.suitmediascreening.databinding.FragmentGuestBinding
-import com.alwan.suitmediascreening.helpers.LoadingState
-import com.alwan.suitmediascreening.helpers.SettingPreferences
-import com.alwan.suitmediascreening.helpers.ViewModelFactory
+import com.alwan.suitmediascreening.helpers.*
 import com.alwan.suitmediascreening.helpers.adapter.GuestAdapter
-import com.alwan.suitmediascreening.helpers.getDateDayInt
 import com.alwan.suitmediascreening.repository.model.Guest
 import kotlinx.coroutines.flow.collect
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
-class GuestFragment : Fragment(), GuestAdapter.OnGuestClickListener {
+class GuestFragment : Fragment(), GuestAdapter.OnGuestClickListener,
+    SwipeRefreshLayout.OnRefreshListener {
     private var _binding: FragmentGuestBinding? = null
     private val binding get() = _binding!!
     private val eventAdapter = GuestAdapter(this)
@@ -56,6 +47,8 @@ class GuestFragment : Fragment(), GuestAdapter.OnGuestClickListener {
         super.onViewCreated(view, savedInstanceState)
         setupViewModel()
         setupRecyclerView()
+
+        binding.swipeGuest.setOnRefreshListener(this)
     }
 
     override fun onResume() {
@@ -86,24 +79,7 @@ class GuestFragment : Fragment(), GuestAdapter.OnGuestClickListener {
         )[MainViewModel::class.java]
         guestViewModel = ViewModelProvider(this)[GuestViewModel::class.java]
         guestViewModel.setGuest()
-        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-            guestViewModel.loadingState.collect {
-                when(it){
-                    is LoadingState.Loading -> {
-                        showLoading(true)
-                    }
-                    is LoadingState.Success -> {
-                        showToast("Guest Loaded")
-                        showLoading(false)
-                    }
-                    is LoadingState.Error -> {
-                        showToast(it.message)
-                        showLoading(false)
-                    }
-                    else -> Unit
-                }
-            }
-        }
+        onRefresh()
     }
 
     override fun onItemClicked(data: Guest) {
@@ -115,33 +91,53 @@ class GuestFragment : Fragment(), GuestAdapter.OnGuestClickListener {
         calculateBirthdate(data.birthdate)
     }
 
-    private fun showLoading(state: Boolean){
-        if(state){
-            binding.progressBarGuest.visibility = View.VISIBLE
-        }else{
-            binding.progressBarGuest.visibility = View.GONE
-        }
-    }
-
     private fun showToast(message: String){
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
     private fun calculateBirthdate(birthdate: String){
         val dateDay = birthdate.getDateDayInt()
-
-        when {
+        val dateMonth = birthdate.getDateMonthInt()
+        val message: String = when {
             dateDay % 6 == 0 -> {
-                showToast("iOS")
+                "iOS"
             }
             dateDay % 3 == 0 -> {
-                showToast("android")
+                "android"
             }
             dateDay % 2 == 0 -> {
-                showToast("blackberry")
+                "blackberry"
             }
             else -> {
-                showToast("feature phone")
+                "feature phone"
+            }
+        }
+
+        if(dateMonth.isPrime()){
+            showToast("$message, Prime")
+        }else{
+            showToast("$message, Not Prime")
+        }
+    }
+
+    override fun onRefresh() {
+        guestViewModel.setGuest()
+        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+            guestViewModel.loadingState.collect {
+                when(it){
+                    is LoadingState.Loading -> {
+                        binding.swipeGuest.isRefreshing = true
+                    }
+                    is LoadingState.Success -> {
+                        showToast("Guest Loaded")
+                        binding.swipeGuest.isRefreshing = false
+                    }
+                    is LoadingState.Error -> {
+                        showToast(it.message)
+                        binding.swipeGuest.isRefreshing = false
+                    }
+                    else -> Unit
+                }
             }
         }
     }
