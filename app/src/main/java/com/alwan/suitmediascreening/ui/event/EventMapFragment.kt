@@ -1,44 +1,33 @@
-package com.alwan.suitmediascreening.ui
+package com.alwan.suitmediascreening.ui.event
 
-import android.content.Context
+import android.app.Activity.RESULT_OK
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.alwan.suitmediascreening.R
 import com.alwan.suitmediascreening.databinding.FragmentEventMapBinding
-import com.alwan.suitmediascreening.helpers.SettingPreferences
-import com.alwan.suitmediascreening.helpers.ViewModelFactory
-import com.alwan.suitmediascreening.helpers.adapter.EventAdapter
+import com.alwan.suitmediascreening.helpers.MarginItemDecoration
+import com.alwan.suitmediascreening.helpers.SnapOnScrollListener
+import com.alwan.suitmediascreening.helpers.adapter.EventMapAdapter
+import com.alwan.suitmediascreening.helpers.attachSnapHelperWithListener
 import com.alwan.suitmediascreening.repository.model.Event
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import androidx.recyclerview.widget.LinearSnapHelper
-
-import com.alwan.suitmediascreening.helpers.SnapOnScrollListener
-import com.alwan.suitmediascreening.helpers.adapter.EventMapAdapter
-import com.alwan.suitmediascreening.helpers.attachSnapHelperWithListener
-
-
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 class EventMapFragment : Fragment(), SnapOnScrollListener.OnSnapPositionChangeListener,
-    View.OnClickListener {
+    EventMapAdapter.OnEventMapClickListener {
     private lateinit var supportMapFragment: SupportMapFragment
     private var _binding: FragmentEventMapBinding? = null
     private val binding get() = _binding!!
-    private val eventMapAdapter = EventMapAdapter()
-    private lateinit var mainViewModel: MainViewModel
+    private val eventMapAdapter = EventMapAdapter(this)
     private lateinit var rvEvent: RecyclerView
     private val data = ArrayList<Event>()
 
@@ -75,9 +64,6 @@ class EventMapFragment : Fragment(), SnapOnScrollListener.OnSnapPositionChangeLi
         super.onViewCreated(view, savedInstanceState)
         setupData()
         setupRecyclerView()
-        setupDataStore()
-
-        binding.toolbar.imgBack.setOnClickListener(this)
     }
 
 
@@ -104,7 +90,7 @@ class EventMapFragment : Fragment(), SnapOnScrollListener.OnSnapPositionChangeLi
     private fun setupRecyclerView() {
         rvEvent = requireView().findViewById(R.id.rv_event)
         rvEvent.setHasFixedSize(true)
-        rvEvent.addItemDecoration(EventAdapter.MarginItemDecoration(16, true))
+        rvEvent.addItemDecoration(MarginItemDecoration(16, true))
         rvEvent.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         setupSnapHelper()
@@ -115,14 +101,6 @@ class EventMapFragment : Fragment(), SnapOnScrollListener.OnSnapPositionChangeLi
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-    }
-
-    private fun setupDataStore() {
-        val pref = SettingPreferences.getInstance(requireContext().dataStore)
-        mainViewModel = ViewModelProvider(
-            this,
-            ViewModelFactory(pref)
-        )[MainViewModel::class.java]
     }
 
     private fun setupSnapHelper() {
@@ -137,18 +115,10 @@ class EventMapFragment : Fragment(), SnapOnScrollListener.OnSnapPositionChangeLi
         changePositionMap(event.latLng)
     }
 
-    private fun goBack() {
-        val action = EventMapFragmentDirections.actionEventMapFragmentToEventFragment()
-        Navigation.findNavController(requireView()).navigate(action)
-        Navigation.findNavController(requireView())
-            .popBackStack(R.id.eventMapFragment, true)
-    }
-
-    override fun onClick(v: View?) {
-        when (v) {
-            binding.toolbar.imgBack -> {
-                goBack()
-            }
+    override fun onItemClicked(data: Event) {
+        with(activity as EventActivity){
+            setResult(RESULT_OK, Intent().putExtra(EVENT_NAME, data.nama))
+            finish()
         }
     }
 }

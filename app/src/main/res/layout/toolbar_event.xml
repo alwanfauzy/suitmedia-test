@@ -13,7 +13,8 @@
         android:src="@drawable/selector_back"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/image_back" />
 
     <TextView
         android:id="@+id/tv_title_toolbar"
@@ -35,7 +36,8 @@
         android:src="@drawable/selector_map"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/image_map" />
 
     <ImageView
         android:id="@+id/img_search"
@@ -45,5 +47,6 @@
         android:src="@drawable/ic_search"
         app:layout_constraintBottom_toBottomOf="@+id/img_map"
         app:layout_constraintEnd_toStartOf="@+id/img_map"
-        app:layout_constraintTop_toTopOf="@+id/img_map" />
+        app:layout_constraintTop_toTopOf="@+id/img_map"
+        android:contentDescription="@string/image_search" />
 </androidx.constraintlayout.widget.ConstraintLayout>

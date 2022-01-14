@@ -1,7 +1,5 @@
 package com.alwan.suitmediascreening.helpers.adapter
 
-import android.content.res.Resources
-import android.graphics.Rect
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,24 +42,6 @@ class EventAdapter(private val listener: OnEventClickListener) :
             binding.tvTanggalEvent.text = event.tanggal
             binding.imgEvent.setImageResource(event.image)
             itemView.setOnClickListener { listener.onItemClicked(event) }
-        }
-    }
-
-    class MarginItemDecoration(spaceHeight: Int, private val isHorizontal: Boolean) :
-        RecyclerView.ItemDecoration() {
-        private val spaceHeightDp = (spaceHeight * Resources.getSystem().displayMetrics.density).toInt()
-        override fun getItemOffsets(
-            outRect: Rect, view: View,
-            parent: RecyclerView, state: RecyclerView.State
-        ) {
-            with(outRect) {
-                if (parent.getChildAdapterPosition(view) == 0 || isHorizontal) {
-                    top = spaceHeightDp
-                }
-                left = spaceHeightDp
-                right = spaceHeightDp
-                bottom = spaceHeightDp
-            }
         }
     }
 }

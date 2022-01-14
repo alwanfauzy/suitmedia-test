@@ -16,13 +16,25 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SuitmediaScreening"
         tools:targetApi="n">
+        <activity
+            android:name=".ui.guest.GuestActivity"
+            android:exported="true" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD1CS1_hkXXyZagiZCCh7YUcq3gSagovUk" />
 
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.main.MainActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".ui.event.EventActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".ui.LoginActivity"
+            android:theme="@style/loginTheme"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
